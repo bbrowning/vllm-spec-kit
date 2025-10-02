@@ -120,7 +120,7 @@ if $REQUIRE_TASKS && [[ ! -f "$TASKS" ]]; then
 fi
 
 # Build list of available documents
-docs=()
+docs=("$FEATURE_SPEC" "$IMPL_PLAN")
 
 # Always check these optional docs
 [[ -f "$RESEARCH" ]] && docs+=("research.md")
