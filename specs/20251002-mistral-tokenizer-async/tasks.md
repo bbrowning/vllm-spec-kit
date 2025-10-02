@@ -11,30 +11,30 @@ This feature fixes event loop blocking during Mistral tokenization by offloading
 - Include exact file paths in descriptions
 
 ## Phase 3.1: Setup
-- [ ] T001 Verify mistral_common dependency and ThreadPoolExecutor availability in vllm/entrypoints/chat_utils.py
-- [ ] T002 Locate existing `apply_mistral_chat_template` function in vllm/entrypoints/chat_utils.py to understand current implementation
+- [X] T001 Verify mistral_common dependency and ThreadPoolExecutor availability in vllm/entrypoints/chat_utils.py
+- [X] T002 Locate existing `apply_mistral_chat_template` function in vllm/entrypoints/chat_utils.py to understand current implementation
 
 ## Phase 3.2: Tests First (TDD) ⚠️ MUST COMPLETE BEFORE 3.3
 **CRITICAL: These tests MUST be written and MUST FAIL before ANY implementation**
 
-- [ ] T003 [P] Contract test for event loop responsiveness in tests/entrypoints/test_mistral_async_event_loop.py (contract: event-loop-001, Test 1)
-- [ ] T004 [P] Contract test for tokenization correctness in tests/entrypoints/test_mistral_async_event_loop.py (contract: event-loop-001, Test 2)
-- [ ] T005 [P] Contract test for health endpoint responsiveness in tests/entrypoints/test_mistral_async_event_loop.py (contract: event-loop-001, Test 3)
-- [ ] T006 [P] Contract test for exception preservation in tests/entrypoints/test_mistral_async_event_loop.py (contract: event-loop-001, Error Handling)
-- [ ] T007 [P] Performance test for small payload overhead in tests/benchmarks/test_mistral_async_performance.py (contract: performance-001, Test 1)
-- [ ] T008 [P] Performance test for medium payload overhead in tests/benchmarks/test_mistral_async_performance.py (contract: performance-001, Test 2)
-- [ ] T009 [P] Performance test for large payload overhead in tests/benchmarks/test_mistral_async_performance.py (contract: performance-001, Test 3)
+- [X] T003 [P] Contract test for event loop responsiveness in tests/entrypoints/test_mistral_async_event_loop.py (contract: event-loop-001, Test 1)
+- [X] T004 [P] Contract test for tokenization correctness in tests/entrypoints/test_mistral_async_event_loop.py (contract: event-loop-001, Test 2)
+- [X] T005 [P] Contract test for health endpoint responsiveness in tests/entrypoints/test_mistral_async_event_loop.py (contract: event-loop-001, Test 3)
+- [X] T006 [P] Contract test for exception preservation in tests/entrypoints/test_mistral_async_event_loop.py (contract: event-loop-001, Error Handling)
+- [X] T007 [P] Performance test for small payload overhead in tests/benchmarks/test_mistral_async_performance.py (contract: performance-001, Test 1)
+- [X] T008 [P] Performance test for medium payload overhead in tests/benchmarks/test_mistral_async_performance.py (contract: performance-001, Test 2)
+- [X] T009 [P] Performance test for large payload overhead in tests/benchmarks/test_mistral_async_performance.py (contract: performance-001, Test 3)
 
 **Note**: Add pytest markers `@pytest.mark.asyncio`, `@pytest.mark.slow_test` for large payloads, `@pytest.mark.benchmark` for performance tests
 
 **Verification**: Run `pytest tests/entrypoints/test_mistral_async_event_loop.py tests/benchmarks/test_mistral_async_performance.py` - ALL tests MUST FAIL with "async_apply_mistral_chat_template not found" or similar
 
 ## Phase 3.3: Core Implementation (ONLY after tests are failing)
-- [ ] T010 Create module-level ThreadPoolExecutor singleton `_mistral_tokenizer_executor` with max_workers=1 in vllm/entrypoints/chat_utils.py
-- [ ] T011 Implement `_get_mistral_executor()` helper function in vllm/entrypoints/chat_utils.py to lazily initialize ThreadPoolExecutor
-- [ ] T012 Implement `async_apply_mistral_chat_template()` function in vllm/entrypoints/chat_utils.py using asyncio.get_event_loop().run_in_executor()
-- [ ] T013 Add type hints and docstring to `async_apply_mistral_chat_template()` explaining thread offloading and sequential execution
-- [ ] T014 Verify all contract tests (T003-T006) now pass with green status
+- [X] T010 Create module-level ThreadPoolExecutor singleton `_mistral_tokenizer_executor` with max_workers=1 in vllm/entrypoints/chat_utils.py
+- [X] T011 Implement `_get_mistral_executor()` helper function in vllm/entrypoints/chat_utils.py to lazily initialize ThreadPoolExecutor
+- [X] T012 Implement `async_apply_mistral_chat_template()` function in vllm/entrypoints/chat_utils.py using asyncio.get_event_loop().run_in_executor()
+- [X] T013 Add type hints and docstring to `async_apply_mistral_chat_template()` explaining thread offloading and sequential execution
+- [X] T014 Verify all contract tests (T003-T006) now pass with green status
 
 ## Phase 3.4: Integration & Validation
 - [ ] T015 Run full test suite to ensure no regressions: `pytest tests/entrypoints/ -v`
@@ -42,11 +42,11 @@ This feature fixes event loop blocking during Mistral tokenization by offloading
 - [ ] T017 Execute quickstart validation script from specs/20251002-mistral-tokenizer-async/quickstart.md manually
 
 ## Phase 3.5: Polish & Quality
-- [ ] T018 [P] Run yapf formatter: `pre-commit run yapf`
-- [ ] T019 [P] Run ruff linter: `pre-commit run ruff`
+- [X] T018 [P] Run yapf formatter: `pre-commit run yapf`
+- [X] T019 [P] Run ruff linter: `pre-commit run ruff`
 - [ ] T020 [P] Run mypy type checker: `pre-commit run mypy-local`
-- [ ] T021 Add inline comments explaining sequential executor rationale in vllm/entrypoints/chat_utils.py
-- [ ] T022 Verify backward compatibility: existing `apply_mistral_chat_template` function unchanged and all existing tests pass
+- [X] T021 Add inline comments explaining sequential executor rationale in vllm/entrypoints/chat_utils.py
+- [X] T022 Verify backward compatibility: existing `apply_mistral_chat_template` function unchanged and all existing tests pass
 
 ## Dependencies
 ```
