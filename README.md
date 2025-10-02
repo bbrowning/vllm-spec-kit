@@ -18,26 +18,26 @@ git clone git@github.com:bbrowning/vllm-spec-kit.git
 ### Starting a new feature / bugfix
 
 
+There is a helper script in `new-vllm-spec.sh` I use to setup a new git worktree, vllm branch for the feature / bugfix work, symlink needed directories, and copy my vscode settings.json into the new worktree.
 Setup a new git worktree and claude/spec-kit symlinks. The basename of the worktree (ie last path part) will become the name of the git branch created when we use `/specify` in spec-kit.
+
+**Note:** This assumes an already setup ~/src/vllm for dev use, such as `pip install -e .` and anything else required to get your base vllm repository setup for development.
 
 ```
 cd ~/src/vllm
 
 # Ensure the right upstream base branch is used, if not main
 git checkout main
-git fetch upstream/main
+git pull
 
-git worktree add trees/002-my-new-feature
+../vllm-spec-kit/new-vllm-spec.sh 002-my-new-feature
+```
+
+Start claude in the new git worktree:
+
+```
 cd trees/002-my-new-feature
-ln -s ~/src/vllm-spec-kit/.specify .specify
-ln -s ~/src/vllm-spec-kit/specs specs
-ln -s ~/src/vllm-spec-kit/.claude .claude
-```
-
-Start claude in the right venv:
-
-```
-source ../../venv/bin/activate
+source venv/bin/activate
 claude
 ```
 
@@ -48,6 +48,17 @@ Start specifying the new bugfix/feature:
 ```
 
 When happy with the specs, plans, tasks, etc commit and push to vllm-spec-kit. Those specs can then be referenced in any PRs opened upstream in vLLM by linking to them in the pushed vllm-spec-kit repo.
+
+### Cleaning up old git worktrees after features merge
+
+Because we have some untracked files in the worktree, we have to `--force` when removing the worktree. Be sure you're finished with that worktree before doing this.
+
+```
+cd ~/src/vllm
+git worktree list
+git worktree remove 002-my-new-feature --force
+git branch -D 002-my-new-feature
+```
 
 ## spec-kit customizations
 
