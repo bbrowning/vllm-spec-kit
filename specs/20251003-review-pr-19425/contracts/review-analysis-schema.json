@@ -1,0 +1,155 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PR Review Analysis Schema",
+  "description": "Schema for structured code review findings for PR #19425",
+  "type": "object",
+  "required": [
+    "pr_number",
+    "pr_title",
+    "pr_url",
+    "review_date",
+    "reviewer",
+    "findings_by_category",
+    "overall_summary"
+  ],
+  "properties": {
+    "pr_number": {
+      "type": "string",
+      "const": "19425"
+    },
+    "pr_title": {
+      "type": "string"
+    },
+    "pr_url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "review_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "reviewer": {
+      "type": "string"
+    },
+    "findings_by_category": {
+      "type": "object",
+      "required": [
+        "TestCoverage",
+        "CommentResolution",
+        "StreamingLogic",
+        "SubsystemIntegration",
+        "Recommendations"
+      ],
+      "properties": {
+        "TestCoverage": {
+          "$ref": "#/definitions/FindingList"
+        },
+        "CommentResolution": {
+          "$ref": "#/definitions/FindingList"
+        },
+        "StreamingLogic": {
+          "$ref": "#/definitions/FindingList"
+        },
+        "SubsystemIntegration": {
+          "$ref": "#/definitions/FindingList"
+        },
+        "Recommendations": {
+          "$ref": "#/definitions/FindingList"
+        }
+      }
+    },
+    "overall_summary": {
+      "type": "string",
+      "minLength": 100
+    },
+    "merge_recommendation": {
+      "type": "string"
+    }
+  },
+  "definitions": {
+    "FindingList": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Finding"
+      }
+    },
+    "Finding": {
+      "type": "object",
+      "required": [
+        "finding_id",
+        "category",
+        "severity",
+        "title",
+        "description",
+        "location",
+        "impact",
+        "recommendation"
+      ],
+      "properties": {
+        "finding_id": {
+          "type": "string",
+          "pattern": "^(TC|CR|SL|SI|REC)-[0-9]{3}$"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "TestCoverage",
+            "CommentResolution",
+            "StreamingLogic",
+            "SubsystemIntegration",
+            "Recommendations"
+          ]
+        },
+        "severity": {
+          "type": "string",
+          "enum": [
+            "Critical",
+            "High",
+            "Medium",
+            "Low"
+          ]
+        },
+        "title": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 100
+        },
+        "description": {
+          "type": "string",
+          "minLength": 50
+        },
+        "location": {
+          "type": "object",
+          "properties": {
+            "file_path": {
+              "type": "string"
+            },
+            "line_numbers": {
+              "type": "string"
+            },
+            "component": {
+              "type": "string"
+            }
+          }
+        },
+        "evidence": {
+          "type": "string"
+        },
+        "impact": {
+          "type": "string",
+          "minLength": 20
+        },
+        "recommendation": {
+          "type": "string",
+          "minLength": 20
+        },
+        "pr_addressed": {
+          "type": "boolean"
+        },
+        "rationale_documented": {
+          "type": "boolean"
+        }
+      }
+    }
+  }
+}
