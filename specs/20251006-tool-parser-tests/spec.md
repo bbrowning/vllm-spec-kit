@@ -33,6 +33,18 @@
 
 ---
 
+## Clarifications
+
+### Session 2025-10-06
+- Q: When creating example model outputs for parsers that don't have existing tests, how should realistic model-specific formats be determined? → A: Search the web for official documentation or examples of the model, then combine that research with examination of the parser's implementation code to create reasonable estimations of expected model output
+- Q: The spec acknowledges "tests may fail at this stage, as parsers are not all bug-free." What defines successful completion of this test suite work? → A: Tests written and documented failures recorded as known issues
+- Q: For the standard test patterns (empty calls, single calls, parallel calls, etc.), how many distinct test cases should each parser have per pattern? → A: As many as needed to cover edge cases discovered during implementation
+- Q: Should tests for different parsers share common test infrastructure (fixtures, helper functions, test data), or should each parser's tests be completely independent? → A: Hybrid - shared utilities but parser-specific fixtures and test data
+- Q: When testing parsers in streaming mode, should each test case reset parser state independently, or can tests share parser instances? → A: Full isolation - each test creates a fresh parser instance
+- Q: How should known test failures be documented? → A: Use pytest xfail marker to mark tests that are expected to fail, as these represent bugs to fix later
+
+---
+
 ## User Scenarios & Testing
 
 ### Primary User Story
@@ -55,6 +67,8 @@ Developers working on vLLM tool call parsers need comprehensive test coverage to
 7. **Given** a tool parser receives malformed or invalid model output, **When** parsing, **Then** the parser must handle the error gracefully without crashing
 
 8. **Given** a parser-specific edge case (e.g., specific JSON format, tag structure), **When** testing that parser, **Then** additional parser-specific tests must validate those unique behaviors
+
+9. **Given** the test suite work is complete, **When** evaluating success, **Then** all test files must be created with comprehensive coverage and any failing tests must be marked with pytest xfail marker to track them as known bugs
 
 ### Edge Cases
 - What happens when model output is empty or only whitespace?
@@ -90,13 +104,13 @@ Developers working on vLLM tool call parsers need comprehensive test coverage to
 
 - **FR-010**: Every tool parser MUST have tests covering both streaming and non-streaming extraction modes
 
-- **FR-011**: Streaming tests MUST verify that tool calls are correctly reconstructed from incremental deltas
+- **FR-011**: Streaming tests MUST verify that tool calls are correctly reconstructed from incremental deltas; each streaming test MUST use a fresh parser instance to ensure full test isolation
 
 - **FR-012**: Streaming tests MUST verify proper handling of tool call chunks split across multiple tokens
 
-- **FR-013**: Test suite MUST allow individual parsers to extend standard tests with parser-specific test cases
+- **FR-013**: Test suite MUST allow individual parsers to extend standard tests with parser-specific test cases; the number of test cases per standard pattern MUST be as many as needed to cover edge cases discovered during implementation, not limited to a fixed minimum
 
-- **FR-014**: Test cases MUST include example model outputs that are representative of actual model behavior for each parser's target models
+- **FR-014**: Test cases MUST include example model outputs that are representative of actual model behavior for each parser's target models; for parsers without existing tests, model output formats MUST be determined by searching for official model documentation or examples on the web and combining that research with examination of the parser's implementation code
 
 - **FR-015**: Test cases MUST include expected OpenAI-compatible tool call objects for validation
 
@@ -109,6 +123,10 @@ Developers working on vLLM tool call parsers need comprehensive test coverage to
 - **FR-019**: Tests MUST verify that function arguments are correctly converted to valid JSON strings
 
 - **FR-020**: Tests MUST verify correct handling of tool calls that contain empty dictionaries or empty arrays as arguments
+
+- **FR-021**: Any test failures discovered during test creation MUST be marked with pytest xfail marker to document expected failures as known bugs that need fixing later
+
+- **FR-022**: Test infrastructure MUST use a hybrid approach with shared utilities and helper functions common across all parsers, while maintaining parser-specific fixtures and test data
 
 ### Key Entities
 
