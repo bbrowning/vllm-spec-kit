@@ -18,7 +18,7 @@
 
 ## Phase 1: Setup & Infrastructure (2 tasks)
 
-### T001: Verify shared test utilities are sufficient
+### T001: Verify shared test utilities are sufficient ✅
 **File**: `tests/entrypoints/openai/tool_parsers/utils.py`
 **Action**: Read existing utilities and verify they support all required test patterns
 **Verify**:
@@ -29,7 +29,7 @@
 - All utilities support fresh parser instances per test
 **If insufficient**: Document missing utilities needed
 
-### T002: Create shared fixtures if needed
+### T002: Create shared fixtures if needed ✅
 **File**: `tests/entrypoints/openai/tool_parsers/conftest.py` (create if doesn't exist)
 **Action**: Create pytest conftest.py with shared fixtures if needed after reviewing existing test files
 **Include**:
@@ -42,7 +42,7 @@
 
 ## Phase 2: Parser Research (18 tasks) - ALL [P]
 
-### T003 [P]: Research deepseekv31 tool parser format
+### T003 [P]: Research deepseekv31 tool parser format ✅
 **File**: `vllm/entrypoints/openai/tool_parsers/deepseekv31_tool_parser.py`
 **Action**:
 1. Search web for "DeepSeek v3.1 tool calling format examples" and review official documentation
@@ -52,95 +52,95 @@
 5. Document format in task notes for T021
 **Output**: Format documentation and example outputs ready for test creation
 
-### T004 [P]: Research deepseekv3 tool parser format
+### T004 [P]: Research deepseekv3 tool parser format ✅
 **File**: `vllm/entrypoints/openai/tool_parsers/deepseekv3_tool_parser.py`
 **Action**: Same as T003 but for DeepSeek v3
 **Search**: "DeepSeek v3 tool calling format examples"
 
-### T005 [P]: Research glm4_moe tool parser format
+### T005 [P]: Research glm4_moe tool parser format ✅
 **File**: `vllm/entrypoints/openai/tool_parsers/glm4_moe_tool_parser.py`
 **Action**: Same as T003 but for GLM-4 MoE
 **Search**: "GLM-4 MoE tool calling format examples"
 
-### T006 [P]: Research granite tool parser format
+### T006 [P]: Research granite tool parser format ✅
 **File**: `vllm/entrypoints/openai/tool_parsers/granite_tool_parser.py`
 **Action**: Same as T003 but for Granite
 **Search**: "IBM Granite tool calling format examples"
 
-### T007 [P]: Research granite_20b_fc tool parser format
+### T007 [P]: Research granite_20b_fc tool parser format ✅
 **File**: `vllm/entrypoints/openai/tool_parsers/granite_20b_fc_tool_parser.py`
 **Action**: Same as T003 but for Granite 20B FC
 **Search**: "IBM Granite 20B function calling format examples"
 
-### T008 [P]: Research internlm2 tool parser format
+### T008 [P]: Research internlm2 tool parser format ✅
 **File**: `vllm/entrypoints/openai/tool_parsers/internlm2_tool_parser.py`
 **Action**: Same as T003 but for InternLM2
 **Search**: "InternLM2 tool calling format examples"
 
-### T009 [P]: Research jamba tool parser format
+### T009 [P]: Research jamba tool parser format ✅
 **File**: `vllm/entrypoints/openai/tool_parsers/jamba_tool_parser.py`
 **Action**: Same as T003 but for Jamba
 **Search**: "AI21 Jamba tool calling format examples"
 
-### T010 [P]: Research kimi_k2 tool parser format
+### T010 [P]: Research kimi_k2 tool parser format ✅
 **File**: `vllm/entrypoints/openai/tool_parsers/kimi_k2_tool_parser.py`
 **Action**: Same as T003 but for Kimi K2
 **Search**: "Kimi K2 tool calling format examples"
 
-### T011 [P]: Research llama tool parser format
+### T011 [P]: Research llama tool parser format ✅
 **File**: `vllm/entrypoints/openai/tool_parsers/llama_tool_parser.py`
 **Action**: Same as T003 but for Llama (base)
 **Search**: "Llama tool calling format examples"
 **Note**: Different from llama4_pythonic which already has tests
 
-### T012 [P]: Research longcat tool parser format
+### T012 [P]: Research longcat tool parser format ✅
 **File**: `vllm/entrypoints/openai/tool_parsers/longcat_tool_parser.py`
 **Action**: Same as T003 but for LongCat
 **Search**: "LongCat tool calling format examples"
 
-### T013 [P]: Research minimax tool parser format
+### T013 [P]: Research minimax tool parser format ✅
 **File**: `vllm/entrypoints/openai/tool_parsers/minimax_tool_parser.py`
 **Action**: Same as T003 but for MiniMax
 **Search**: "MiniMax tool calling format examples"
 
-### T014 [P]: Research mistral tool parser format
+### T014 [P]: Research mistral tool parser format ✅
 **File**: `vllm/entrypoints/openai/tool_parsers/mistral_tool_parser.py`
 **Action**: Same as T003 but for Mistral
 **Search**: "Mistral tool calling format examples"
 **Note**: Pay attention to [TOOL_CALLS] token and 9-character alphanumeric ID format
 
-### T015 [P]: Research openai tool parser format
+### T015 [P]: Research openai tool parser format ✅
 **File**: `vllm/entrypoints/openai/tool_parsers/openai_tool_parser.py`
 **Action**: Same as T003 but for OpenAI format
 **Search**: "OpenAI Harmony encoding tool calling format"
 **Note**: Check if test file already exists at tests/tool_use/test_openai_tool_parser.py
 
-### T016 [P]: Research phi4mini tool parser format
+### T016 [P]: Research phi4mini tool parser format ✅
 **File**: `vllm/entrypoints/openai/tool_parsers/phi4mini_tool_parser.py`
 **Action**: Same as T003 but for Phi-4 Mini
 **Search**: "Phi-4 Mini tool calling format examples"
 
-### T017 [P]: Research qwen3coder tool parser format
+### T017 [P]: Research qwen3coder tool parser format ✅
 **File**: `vllm/entrypoints/openai/tool_parsers/qwen3coder_tool_parser.py`
 **Action**: Same as T003 but for Qwen3 Coder
 **Search**: "Qwen3 Coder tool calling format examples"
 
-### T018 [P]: Research qwen3xml tool parser format
+### T018 [P]: Research qwen3xml tool parser format ✅
 **File**: `vllm/entrypoints/openai/tool_parsers/qwen3xml_tool_parser.py`
 **Action**: Same as T003 but for Qwen3 XML
 **Search**: "Qwen3 XML tool calling format examples"
 
-### T019 [P]: Research seed_oss tool parser format
+### T019 [P]: Research seed_oss tool parser format ✅
 **File**: `vllm/entrypoints/openai/tool_parsers/seed_oss_tool_parser.py`
 **Action**: Same as T003 but for SEED OSS
 **Search**: "SEED OSS tool calling format examples"
 
-### T020 [P]: Research step3 tool parser format
+### T020 [P]: Research step3 tool parser format ✅
 **File**: `vllm/entrypoints/openai/tool_parsers/step3_tool_parser.py`
 **Action**: Same as T003 but for Step-3
 **Search**: "Step-3 tool calling format examples"
 
-### T021 [P]: Research xlam tool parser format
+### T021 [P]: Research xlam tool parser format ✅
 **File**: `vllm/entrypoints/openai/tool_parsers/xlam_tool_parser.py`
 **Action**: Same as T003 but for xLAM
 **Search**: "xLAM tool calling format examples"

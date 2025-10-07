@@ -2,7 +2,7 @@
 
 **Feature Branch**: `20251006-tool-parser-tests`
 **Created**: 2025-10-06
-**Status**: Draft
+**Status**: Updated 2025-10-07 - Spec refined with lessons learned from iterations 2-3
 **Input**: User description: "I need to write unit tests for every tool call parser currently in vLLM. Some of them have unit test files already, and some do not. I need a consistent set of tests to run for every single tool parser, as well as allowing some parsers to have their own extensions to the consistent set of tests for any issues specific to the models that tool parser covers. A tool parser is written to parse the model output of one or more types of large language models, where it takes the raw model output and converts it into OpenAI-compatible tool calls to be passed back to clients. I need help both in creating the example model outputs that the parser will parse as well as the expected tool call objects that the parser should generate. Look at the existing tests and find common patterns, like testing for empty tool calls, testing for surrounding text or whitespace, testing for parallel tool calls, etc. Come up with a list of the things every parser should test. Then, write test cases for every parser using that knowledge. It's ok if the tests fail at this stage, as the parsers are not all bug-free."
 
 ## Execution Flow (main)
@@ -37,11 +37,13 @@
 
 ### Session 2025-10-06
 - Q: When creating example model outputs for parsers that don't have existing tests, how should realistic model-specific formats be determined? → A: Search the web for official documentation or examples of the model, then combine that research with examination of the parser's implementation code to create reasonable estimations of expected model output
-- Q: The spec acknowledges "tests may fail at this stage, as parsers are not all bug-free." What defines successful completion of this test suite work? → A: Tests written and documented failures recorded as known issues
+- Q: The spec acknowledges "tests may fail at this stage, as parsers are not all bug-free." What defines successful completion of this test suite work? → A: Tests written and documented failures recorded as known issues using pytest xfail markers
 - Q: For the standard test patterns (empty calls, single calls, parallel calls, etc.), how many distinct test cases should each parser have per pattern? → A: As many as needed to cover edge cases discovered during implementation
-- Q: Should tests for different parsers share common test infrastructure (fixtures, helper functions, test data), or should each parser's tests be completely independent? → A: Hybrid - shared utilities but parser-specific fixtures and test data
+- Q: Should tests for different parsers share common test infrastructure (fixtures, helper functions, test data), or should each parser's tests be completely independent? → A: Hybrid - shared utilities but parser-specific fixtures and test data; future refactoring may consolidate into a standard test contract pattern to reduce duplication
 - Q: When testing parsers in streaming mode, should each test case reset parser state independently, or can tests share parser instances? → A: Full isolation - each test creates a fresh parser instance
 - Q: How should known test failures be documented? → A: Use pytest xfail marker to mark tests that are expected to fail, as these represent bugs to fix later
+- Q: How should we handle pre-existing parser tests that are discovered during implementation? → A: Pre-existing unit tests in other locations should be preserved; comprehensive tests may coexist with legacy tests until a future consolidation effort
+- Q: What is the scope of "all parsers" when some parsers already have tests? → A: Focus on parsers without comprehensive unit tests; parsers with adequate existing test coverage may be excluded from the comprehensive test suite scope
 
 ---
 
@@ -70,6 +72,12 @@ Developers working on vLLM tool call parsers need comprehensive test coverage to
 
 9. **Given** the test suite work is complete, **When** evaluating success, **Then** all test files must be created with comprehensive coverage and any failing tests must be marked with pytest xfail marker to track them as known bugs
 
+10. **Given** a test suite with xfail markers, **When** running tests after upstream parser improvements, **Then** tests previously marked as xfail may now pass (xpassed state), requiring removal of obsolete xfail markers
+
+11. **Given** test failures during implementation, **When** triaging failures, **Then** each failure must be investigated to determine if the issue is incorrect test format or an actual parser bug before applying fixes or markers
+
+12. **Given** pre-existing test files are discovered, **When** planning comprehensive tests, **Then** the relationship between existing and new tests must be documented to avoid confusion and clarify scope
+
 ### Edge Cases
 - What happens when model output is empty or only whitespace?
 - How does the parser handle tool calls with no arguments (parameterless functions)?
@@ -79,12 +87,15 @@ Developers working on vLLM tool call parsers need comprehensive test coverage to
 - How does the parser handle model outputs that mix tool calls with regular text content?
 - What happens when tool call JSON is malformed or incomplete?
 - How does the parser handle tool calls with various data types (strings, integers, booleans, arrays, objects, null values)?
+- What happens when xfail markers become inaccurate due to upstream parser fixes?
+- How should tests handle discovery of pre-existing test files for the same parsers?
+- What happens when test examples have wrong format but parser is actually correct?
 
 ## Requirements
 
 ### Functional Requirements
 
-- **FR-001**: Test suite MUST cover all tool parsers currently implemented in vLLM (deepseekv31, deepseekv3, glm4_moe, granite, granite_20b_fc, hermes, hunyuan_a13b, internlm2, jamba, kimi_k2, llama, llama4_pythonic, longcat, minimax, mistral, openai, phi4mini, pythonic, qwen3coder, qwen3xml, seed_oss, step3, xlam)
+- **FR-001**: Test suite MUST provide comprehensive unit test coverage for tool parsers without adequate existing tests; the scope may be subset of all available parsers if some already have sufficient unit test coverage in other locations
 
 - **FR-002**: Every tool parser MUST have tests verifying correct behavior when model output contains no tool calls
 
@@ -128,6 +139,14 @@ Developers working on vLLM tool call parsers need comprehensive test coverage to
 
 - **FR-022**: Test infrastructure MUST use a hybrid approach with shared utilities and helper functions common across all parsers, while maintaining parser-specific fixtures and test data
 
+- **FR-023**: Test suite MUST identify and document all pre-existing parser tests during implementation to avoid duplication and ensure clarity about the relationship between test suites
+
+- **FR-024**: Test suite MUST establish a systematic triaging process for identifying whether test failures are due to test issues (incorrect examples, wrong format) or actual parser bugs
+
+- **FR-025**: Test suite MUST achieve a clean test state where all tests either pass or are explicitly marked with xfail/skip markers with clear reasons; no unexpected failures should remain
+
+- **FR-026**: Test suite design SHOULD minimize code duplication across parser test files to enable easy addition of new test patterns and consistent updates across all parsers
+
 ### Key Entities
 
 - **Tool Parser**: A component that converts raw model output from specific LLM models into OpenAI-compatible tool call objects; each parser understands the output format of one or more model families
@@ -143,6 +162,112 @@ Developers working on vLLM tool call parsers need comprehensive test coverage to
 - **Standard Test Pattern**: A test scenario that applies universally to all tool parsers, ensuring consistent baseline behavior across the system
 
 - **Parser-Specific Test**: A test scenario that addresses unique behaviors, edge cases, or output formats specific to a particular parser's target models
+
+- **Test Suite Reconciliation**: The process of identifying relationships between new tests and pre-existing tests to avoid duplication and clarify scope
+
+- **Test Triaging**: The systematic process of investigating test failures to determine root cause (test format issues vs actual parser bugs) and applying appropriate fixes or markers
+
+- **Test Contract**: A standardized interface defining the common test scenarios all parsers must support, enabling consistent testing patterns and reducing code duplication
+
+---
+
+## Test Architecture
+
+### Overview
+
+This feature creates comprehensive unit tests for tool parsers that lack adequate test coverage. During implementation, existing tests must be identified and documented to clarify scope and avoid duplication.
+
+### Test Suite Organization Principles
+
+**Test Type Differentiation**: Test suites must be clearly categorized by purpose and execution characteristics:
+
+1. **Unit Tests**: Fast, isolated tests of parser logic using mocked dependencies
+   - Execute in seconds to minutes
+   - No external services or model downloads required
+   - Test parser logic and edge cases in isolation
+   - Suitable for CI/CD fast feedback loops
+
+2. **Integration Tests**: End-to-end tests with real services and models
+   - Require running servers and model loading
+   - Test full request/response API flow
+   - Validate production scenarios
+   - Slower execution, suitable for release qualification
+
+**Coverage Assessment**: Before implementation, assess existing test coverage:
+- Identify parsers with adequate existing unit tests
+- Identify parsers requiring new comprehensive tests
+- Document pre-existing test locations and purposes
+- Define clear scope for new test work
+
+**Coexistence Strategy**: New comprehensive tests may coexist with legacy tests:
+- Pre-existing unit tests in other locations should be preserved
+- Integration tests serve different purpose and must be maintained
+- Future consolidation efforts may unify test organization
+- Clear documentation prevents confusion about test relationships
+
+### When to Use Each Test Suite
+
+**Use Unit Tests** for:
+- Fast feedback during parser development
+- Testing parser logic and edge cases in isolation
+- CI/CD pipelines requiring quick validation
+- Debugging parser-specific issues
+- Ensuring consistent behavior across all parsers
+
+**Use Integration Tests** for:
+- Validating end-to-end model → parser → API flow
+- Testing with real model outputs and tokenizers
+- Production scenario validation
+- Release qualification testing
+- Model-specific behavior verification
+
+### Test Quality and Maintenance
+
+**Clean Test State**: Test suites must achieve and maintain a clean state:
+- All tests either pass or have explicit xfail/skip markers
+- Every xfail marker includes a clear reason (test format issue vs parser bug)
+- No unexpected failures remain after triaging
+- Test results provide reliable signal for CI/CD
+
+**Systematic Triaging**: Test failures must be investigated systematically:
+1. Run failing test with detailed output
+2. Determine if issue is test format (wrong example) or parser bug
+3. For test format issues: Fix the test examples
+4. For parser bugs: Mark test as xfail with clear reason
+5. For streaming-specific bugs: Mark only streaming variant as xfail
+6. For missing dependencies: Mark tests as skipped with reason
+
+**Code Organization**: Tests should follow consistent patterns:
+- Standard test scenarios (10 core tests per parser)
+- Parser-specific test extensions
+- Shared utilities for common operations
+- Parser-specific fixtures and test data
+- Future refactoring may consolidate into test contract pattern to reduce duplication
+
+### Iterative Refinement
+
+Test development should follow an iterative approach:
+
+**Iteration 1 - Initial Creation**:
+- Write tests for all parsers in scope
+- Create example model outputs for each scenario
+- Expect many failures (parsers have bugs)
+- Document all failures and xfail markers
+
+**Iteration 2 - Triaging and Cleanup**:
+- Remove incorrect xfail markers (tests that now pass)
+- Fix test format issues (wrong XML structure, missing tags)
+- Add missing xfail markers for newly discovered bugs
+- Reduce unexpected failures
+
+**Iteration 3 - Achieving Clean State**:
+- Systematically investigate all remaining failures
+- Fix test issues or mark as xfail
+- Verify all xfail markers are still accurate
+- Achieve zero unexpected failures
+- Document all known parser bugs
+
+**Success Criteria**: Project is complete when test suite reaches clean state with all failures properly triaged and documented.
 
 ---
 
