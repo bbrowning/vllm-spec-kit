@@ -1,30 +1,9 @@
 # Comprehensive Tool Parser Test Suite - Documentation Index
 
-**Project**: Comprehensive unit tests for all 23 tool parsers in vLLM
+**Project**: Comprehensive unit tests for vLLM tool parsers
 **Branch**: `20251006-tool-parser-tests`
-**Status**: Iteration 2 Complete → Iteration 3 In Progress
 
----
-
-## 🚀 Quick Start
-
-**New to this project?** Start here in order:
-
-1. **SESSION-CONTEXT.md** ⭐ **START HERE** ⭐
-   - Complete project overview
-   - Current status and metrics
-   - How to run tests and continue work
-   - Quick start guide for new sessions
-
-2. **test-suite-reconciliation.md** ⚠️ **CRITICAL** ⚠️
-   - Explains we have TWO test suites (unit + integration)
-   - Must read to avoid confusion about duplicate files
-   - Created during reconciliation analysis
-
-3. **tasks-iteration-3.md** 🎯 **YOUR WORK HERE**
-   - Complete roadmap for next work
-   - 16 task groups to achieve zero failures
-   - Start with Priority 0 tasks
+This directory contains all documentation for the comprehensive unit test suite for vLLM's tool call parsers. For current project status and remaining work, see **tasks.md**.
 
 ---
 
@@ -34,16 +13,24 @@
 
 **spec.md** - Feature Specification
 - What we're building and why
-- Functional requirements (FR-001 through FR-022)
+- Functional requirements (FR-001 through FR-026)
 - User scenarios and acceptance criteria
 - Test architecture overview
 - Read first to understand project goals
 
 **plan.md** - Implementation Plan
-- How we'll build the test suite
+- How we built the test suite
 - Architecture and design decisions
-- Implementation approach
+- Implementation approach and phases
 - Testing strategy
+- Constitutional compliance verification
+
+**tasks.md** - Current Task Status
+- **⭐ CHECK HERE FOR PROJECT STATUS ⭐**
+- Current progress and completion metrics
+- Remaining work and task breakdown
+- Success criteria
+- Historical task iterations
 
 **research.md** - Parser Format Research
 - Research on each parser's expected format
@@ -57,180 +44,75 @@
 - Standard test patterns
 - Helper utilities
 
-### Progress Documents
-
-**tasks.md** - Original Task Breakdown (Iteration 1)
-- Initial task list
-- Parser categorization
-- Original 23-parser breakdown
-- Historical reference
-
-**tasks-iteration-2.md** - Iteration 2 Results
-- What was accomplished
-- Files modified (8 files)
-- Progress metrics: 401→432 passed, 71→59 failed
-- Key learnings and discoveries
-- Status: ✅ COMPLETE
-
-**tasks-iteration-3.md** - Iteration 3 Roadmap
-- 16 task groups to complete
-- Priority 0: 3 quick wins
-- Priority 1-3: Triage 59 failures
-- Detailed investigation steps
-- Status: 🔄 IN PROGRESS
-
-**known-failures.md** - Known Issues Tracking
-- Parser-by-parser status
-- Known bugs and limitations
-- Failure patterns
-- Baseline for measuring progress
-
 ### Analysis Documents
 
-**test-suite-reconciliation.md** ⚠️ IMPORTANT ⚠️
-- Discovered during reconciliation phase
+**test-suite-reconciliation.md** ⚠️ IMPORTANT
 - Explains TWO test suite locations
-- Pre-existing tests: `tests/tool_use/` (integration)
-- New tests: `tests/entrypoints/openai/tool_parsers/` (unit)
-- Overlap analysis: 8 parsers in both locations
+- Pre-existing tests: `tests/tool_use/` (integration tests)
+- New tests: `tests/entrypoints/openai/tool_parsers/` (comprehensive unit tests)
+- Overlap analysis and scope clarification
 - **MUST READ** to understand full picture
 
-**SESSION-CONTEXT.md** ⭐ QUICKSTART ⭐
-- Comprehensive project overview
-- How to continue work in new sessions
-- Current status and next steps
-- Tips and common patterns
-- Quick reference guide
+**tool-call-test-refactor.md**
+- Future refactoring opportunity
+- Proposed test contract pattern
+- Potential to reduce ~4,155 lines of duplicated code
+- Implementation plan for DRY improvements
 
 ### Contract Documents
 
 **contracts/test_interface.md**
-- Standard test patterns
+- Standard test patterns (10 required tests per parser)
 - Test function signatures
 - Expected behaviors
 - Shared utilities documentation
 
+**quickstart.md**
+- How to run tests
+- Investigation workflow for triaging failures
+- xfail marker usage patterns
+- Example parser test file structure
+
 ---
 
-## 📂 Test Files Locations
+## 📂 Test File Locations
 
-### Unit Tests (This Project)
+### Comprehensive Unit Tests (This Project)
 ```
 tests/entrypoints/openai/tool_parsers/
-├── utils.py                           # Shared utilities
-├── test_deepseekv3_tool_parser.py    # And 22 more parser test files...
-└── test_xlam_tool_parser.py
+├── utils.py                           # Shared test utilities
+├── test_deepseekv3_tool_parser.py    # Comprehensive parser tests
+├── test_granite_tool_parser.py
+├── test_hermes_tool_parser.py
+├── test_internlm2_tool_parser.py
+├── test_llama3_json_tool_parser.py   # (llama parser tests)
+├── test_mistral_tool_parser.py
+├── test_qwen3xml_tool_parser.py
+└── ... (14 parser test files total)
 ```
 
-**Coverage**: 23/24 parsers (OpenAI parser pending - P0-T003)
-**Tests**: ~607 test cases, 16,152 lines of code
-**Run time**: < 2 minutes (fast, no model downloads)
+**Characteristics**:
+- Fast execution (< 1 minute for full suite)
+- No model downloads required (mocked tokenizers)
+- Isolated unit tests with fresh parser instances
+- 10 standard tests + parser-specific extensions per parser
+- Both streaming and non-streaming modes tested
 
-### Integration Tests (Pre-existing)
+### Integration Tests (Pre-existing - Separate Scope)
 ```
 tests/tool_use/
-├── utils.py                           # Server configs
-├── test_deepseekv31_tool_parser.py   # And 9 more parser test files...
+├── utils.py                           # Server configuration utilities
+├── test_deepseekv31_tool_parser.py   # Integration tests for select parsers
 ├── test_chat_completions.py          # General integration tests
-└── mistral/                           # Mistral subdirectory
+└── mistral/
     └── test_mistral_tool_calls.py
 ```
 
-**Coverage**: 10 parsers
-**Tests**: Varies by parser
-**Run time**: Slower (requires real models)
-
-**See**: `test-suite-reconciliation.md` for complete analysis
-
----
-
-## 📊 Current Metrics
-
-### Test Results (After Iteration 2)
-```
-432 passed   ✅ +31 from iteration 1
-59 failed    🔄 -12 from iteration 1
-8 skipped    ⏭️
-92 xfailed   📋 +7 from iteration 1 (properly documented)
-1 xpassed    ⚠️ -26 from iteration 1 (96% reduction!)
-15 errors    ❌ kimi_k2 blobfile dependency
-```
-
-### Target (End of Iteration 3)
-```
-~443-480 passed
-0 failed
-23 skipped
-120-157 xfailed
-0 xpassed
-0 errors
-24/24 parsers covered
-```
-
----
-
-## 🎯 Iteration Breakdown
-
-### Iteration 1 (Complete) ✅
-- Created comprehensive tests for all 23 parsers
-- 16,152 lines of test code
-- Result: 420 passed, 106 failed, 55 errors
-- Established patterns and utilities
-
-### Iteration 2 (Complete) ✅
-- Removed 27 unnecessary xfail markers
-- Fixed qwen3xml format issues (16 failures → 8 passed + 11 xfailed)
-- Added trust_remote_code for kimi_k2
-- Result: 432 passed, 59 failed, 92 xfailed, 1 xpassed, 15 errors
-- Files modified: 8
-
-### Iteration 3 (In Progress) 🔄
-- Fix 1 xpassed test
-- Handle 15 kimi_k2 errors
-- Create OpenAI parser tests (NEW)
-- Triage 59 failures across 12 parsers
-- Target: 0 failures, 0 errors, 0 xpassed
-- See: `tasks-iteration-3.md`
-
----
-
-## 🧩 Parser Coverage
-
-### All Parsers (24 total)
-
-**With Comprehensive Unit Tests** (23/24):
-1. deepseekv3 ✅
-2. deepseekv31 ✅ 🔄
-3. glm4_moe ✅ 🔄
-4. granite ✅
-5. granite_20b_fc ✅
-6. hermes ✅
-7. hunyuan_a13b ✅
-8. internlm2 ✅
-9. jamba ✅ 🔄
-10. kimi_k2 ✅ 🔄 ❌ (blobfile error)
-11. llama ✅
-12. llama3_json ✅
-13. llama4_pythonic ✅
-14. longcat ✅
-15. minimax ✅ 🔄
-16. mistral ✅ 🔄
-17. phi4mini ✅
-18. pythonic ✅
-19. qwen3coder ✅ 🔄
-20. qwen3xml ✅ ⚠️ (1 xpassed)
-21. seed_oss ✅ 🔄 ❌ (32 failures)
-22. step3 ✅
-23. xlam ✅ 🔄
-
-**Missing Comprehensive Unit Tests** (1/24):
-24. **openai** ⚠️ (has integration tests only) → P0-T003
-
-**Legend**:
-- ✅ = Has comprehensive unit tests
-- 🔄 = Also has integration tests in `tests/tool_use/`
-- ❌ = Has errors or major failures
-- ⚠️ = Has xpassed tests
+**Characteristics**:
+- Slower execution (requires vLLM server)
+- End-to-end validation with real models
+- Some overlap with comprehensive unit tests (9 parsers)
+- **Both test suites are valuable** - see test-suite-reconciliation.md
 
 ---
 
@@ -238,127 +120,178 @@ tests/tool_use/
 
 ### Run Tests
 ```bash
-# All unit tests
+# All comprehensive unit tests
 pytest tests/entrypoints/openai/tool_parsers/ -v
 
 # Specific parser
-pytest tests/entrypoints/openai/tool_parsers/test_qwen3xml_tool_parser.py -v
+pytest tests/entrypoints/openai/tool_parsers/test_hermes_tool_parser.py -v
 
 # Stop on first failure with details
-pytest tests/entrypoints/openai/tool_parsers/ -xvs
+pytest tests/entrypoints/openai/tool_parsers/test_qwen3xml_tool_parser.py -xvs
 
-# Summary only
+# Summary only (no tracebacks)
 pytest tests/entrypoints/openai/tool_parsers/ -v --tb=no -q
 
-# All integration tests
+# Run specific test
+pytest tests/entrypoints/openai/tool_parsers/test_mistral_tool_parser.py::test_single_tool_call_simple_args -xvs
+
+# All integration tests (separate scope)
 pytest tests/tool_use/ -v
 ```
 
-### Useful Flags
+### Useful pytest Flags
 - `-v` : Verbose (show each test name)
 - `-x` : Stop on first failure
 - `-s` : Show print statements
 - `--tb=no` : Don't show tracebacks
 - `-q` : Quiet (less output)
 - `-k <pattern>` : Run tests matching pattern
+- `--tb=short` : Shorter tracebacks
 
 ---
 
-## 🚨 Known Issues
-
-### High Priority
-1. **kimi_k2**: 15 errors due to blobfile dependency → P0-T002
-2. **qwen3xml**: 1 xpassed test → P0-T001
-3. **openai**: Missing comprehensive unit tests → P0-T003
-4. **seed_oss**: 32 failures, parser not extracting → P1-T001
-
-### Medium Priority
-- **mistral**: 14 failures → P1-T002
-- **granite**: 12 failures → P1-T003
-- **llama/minimax**: 20 failures → P1-T004
-
-See `tasks-iteration-3.md` for complete breakdown
-
----
-
-## 📖 Reading Order for New Sessions
-
-### Essential Reading (Do This First)
-1. SESSION-CONTEXT.md - Complete overview
-2. test-suite-reconciliation.md - Understand two test suites
-3. tasks-iteration-3.md - Your work roadmap
-
-### Background Reading (If Needed)
-4. spec.md - Original requirements
-5. known-failures.md - Parser status
-6. tasks-iteration-2.md - Recent progress
-
-### Reference Reading (As Needed)
-7. plan.md - Implementation approach
-8. research.md - Parser formats
-9. data-model.md - Data structures
-10. contracts/test_interface.md - Test patterns
-
----
-
-## 💡 Key Insights
+## 💡 Key Insights & Patterns
 
 ### Test Suite Architecture
-- **TWO test suites** with different purposes (see test-suite-reconciliation.md)
-- Unit tests: Fast, comprehensive, isolated parser logic
-- Integration tests: Slower, end-to-end, real model validation
-- **Both are valuable** and should be maintained
+- **TWO independent test suites** with different purposes (see test-suite-reconciliation.md)
+- **Unit tests** (this project): Fast, comprehensive, isolated parser logic validation
+- **Integration tests** (pre-existing): Slower, end-to-end, real model validation with vLLM server
+- **Both are valuable** and serve different purposes - no duplication issue
+
+### Common Test Patterns
+
+**Standard Test Contract** (10 tests per parser):
+1. No tool calls (plain text)
+2. Single tool call with simple arguments
+3. Parallel tool calls
+4. Various data types (string, int, float, bool, null, array, object)
+5. Empty/parameterless tool calls
+6. Surrounding text (tool calls mixed with content)
+7. Escaped strings and special characters
+8. Malformed input handling
+9. Streaming reconstruction (streaming == non-streaming)
+10. Streaming boundary splits (mid-token splits)
+
+**Parser-Specific Extensions**:
+- Additional tests for unique parser features
+- Format-specific edge cases
+- Parser quirks and limitations
+
+### Test Failure Investigation Process
+
+1. **Run the failing test individually**:
+   ```bash
+   pytest path/to/test.py::test_name -xvs
+   ```
+
+2. **Classify the failure**:
+   - **Test format issue**: Test example doesn't match parser's expected format → Fix test
+   - **Parser bug**: Parser has a bug or limitation → Mark as xfail
+   - **Streaming bug**: Streaming mode differs from non-streaming → Mark streaming as xfail
+   - **Dependency issue**: Missing library or requirement → Skip test with skipif
+
+3. **Apply the fix**:
+   - Fix test constants if format issue
+   - Add `@pytest.mark.xfail(reason="...")` for known bugs
+   - Add `@pytest.mark.skip(reason="...")` for missing dependencies
+   - Document findings in xfail/skip reasons
+
+4. **Verify the fix**:
+   ```bash
+   pytest path/to/test.py -v --tb=no -q
+   ```
+
+### Success Patterns from Completed Work
+
+1. **Systematic triaging** - Handle one parser at a time, one failure at a time
+2. **Test format first** - Most failures are test format issues, not parser bugs
+3. **Document with xfail** - Mark known bugs clearly for future fixes
+4. **Fresh parser instances** - Always use fresh parser per test (streaming state issues)
+5. **xfail marker accuracy** - Keep markers up-to-date (avoid xpassed tests)
 
 ### Common Failure Patterns
-1. **Streaming bugs** - Many parsers have incomplete streaming
-   - Solution: Mark streaming tests as xfail
-2. **Test format issues** - Test examples don't match parser expectations
-   - Solution: Read parser code, fix test constants
-3. **Dependencies** - Some parsers need special libraries
-   - Solution: Add skipif decorators
 
-### Success Patterns
-1. Start with easy wins (remove unnecessary xfails)
-2. Fix test formats before assuming parser bugs
-3. Mark known bugs with xfail for later fixing
-4. Test one parser at a time systematically
-5. Document findings as you go
+**Streaming Bugs** (most common):
+- Many parsers have incomplete or inconsistent streaming implementations
+- Streaming returns different content than non-streaming
+- Streaming fails on boundary splits
+- **Solution**: Mark streaming tests as xfail with clear reasons
 
----
+**Test Format Issues**:
+- Test examples don't match parser's expected format
+- Missing start/end markers
+- Wrong JSON field names ("parameters" vs "arguments")
+- **Solution**: Read parser source code, fix test constants
 
-## ✅ Definition of Done
+**Error Handling**:
+- Some parsers raise exceptions on malformed input instead of gracefully handling
+- **Solution**: Mark as xfail or add try-except to test
 
-**Iteration 3 Complete When**:
-- [ ] 0 failures
-- [ ] 0 errors
-- [ ] 0 xpassed
-- [ ] 24/24 parsers have comprehensive unit tests
-- [ ] All xfail markers have clear reasons
-- [ ] known-failures.md updated
-- [ ] Ready for CI/CD
-
-**Full Project Complete When**:
-- [ ] Iteration 3 complete
-- [ ] Documentation updated
-- [ ] Pull request created
-- [ ] Tests passing in CI
+**Dependencies**:
+- Some parsers require special libraries (e.g., blobfile for kimi_k2)
+- **Solution**: Use `@pytest.mark.skipif` or `pytest.importorskip`
 
 ---
 
-## 🎬 Next Steps
+## 📖 Recommended Reading Order
 
-**For your next session**:
+### For Understanding Project Context
+1. **spec.md** - Understand what we're building and why
+2. **test-suite-reconciliation.md** - Understand the two test suites (critical!)
+3. **plan.md** - Understand how we built it
+4. **tasks.md** - Check current status and remaining work
 
-1. Read SESSION-CONTEXT.md (5 min)
-2. Read test-suite-reconciliation.md (5 min)
-3. Run tests to see current state (1 min)
-4. Start with P0-T001 in tasks-iteration-3.md (5 min)
-5. Continue through Priority 0 tasks
-6. Move to Priority 1-3 systematically
+### For Working on Tests
+1. **contracts/test_interface.md** - Standard test patterns
+2. **quickstart.md** - How to run and debug tests
+3. **research.md** - Parser format examples (as reference)
+4. **data-model.md** - Data structures (as reference)
 
-**You've got this!** Most of the hard work is done. Now it's systematic triaging.
+### For Future Improvements
+1. **tool-call-test-refactor.md** - Test refactoring opportunity
+2. **tasks.md** - Optional future work section
 
 ---
 
-**Last Updated**: 2025-10-06
-**Questions?** Check SESSION-CONTEXT.md or run the tests!
+## 🎯 Project Goals
+
+### Primary Goals (Achieved ✅)
+- Comprehensive unit test coverage for all tool parsers in scope
+- 10 standard tests per parser following test contract
+- Both streaming and non-streaming mode validation
+- Fast test execution (< 2 minutes target)
+- No model downloads required (mocked tokenizers)
+- Full test isolation (fresh parser per test)
+
+### Secondary Goals
+- Document known parser bugs with xfail markers
+- Provide clear test examples for each parser format
+- Establish patterns for future parser test additions
+- Enable CI/CD integration with clean test state
+
+### Non-Goals
+- Fixing parser bugs (document with xfail instead)
+- Creating integration tests (those already exist in tests/tool_use/)
+- Replacing existing tests (both test suites are valuable)
+- Testing all 24 parsers (some have adequate old-style tests)
+
+---
+
+## 🔗 Related Documentation
+
+**vLLM Tool Parsers Source**:
+- `vllm/entrypoints/openai/tool_parsers/` - Parser implementations
+- Each parser has its own file (e.g., `hermes_tool_parser.py`)
+
+**vLLM Documentation**:
+- Main docs: https://docs.vllm.ai/
+- Contributing guide: https://docs.vllm.ai/en/latest/contributing/
+
+**Constitution**:
+- `.specify/memory/constitution.md` - vLLM development principles
+- All 5 constitutional principles verified as satisfied for this project
+
+---
+
+**For current project status, see tasks.md**
+**Last Documentation Update**: 2025-10-07

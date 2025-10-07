@@ -116,20 +116,13 @@ vLLM Test Infrastructure for Tool Parsers
    - Execution comparison
    - Recommendations
 
-2. **SESSION-CONTEXT.md** (Quick Start Guide)
-   - Complete project overview
-   - Current status and metrics
-   - How to continue work
-   - Tips and patterns
-   - Quick reference
-
-3. **README.md** (Documentation Index)
+2. **README.md** (Documentation Index)
    - All documentation files listed
    - Reading order for new sessions
    - Quick command reference
-   - Parser coverage summary
+   - Project overview
 
-4. **RECONCILIATION-SUMMARY.md** (This File)
+3. **RECONCILIATION-SUMMARY.md** (This File)
    - Executive summary of reconciliation
    - Key decisions
    - Impact on project
@@ -138,14 +131,13 @@ vLLM Test Infrastructure for Tool Parsers
 
 1. **spec.md**
    - Added "Test Architecture" section
-   - Referenced SESSION-CONTEXT.md
    - Explained two test suites
+   - Referenced test-suite-reconciliation.md
 
-2. **tasks-iteration-3.md**
-   - Added P0-T003: Create OpenAI parser unit tests
-   - Updated task counts
-   - Updated execution strategy
-   - Referenced SESSION-CONTEXT.md
+2. **tasks.md**
+   - Consolidated all task iterations
+   - Current project status tracking
+   - Success criteria and completion metrics
 
 ---
 
@@ -231,10 +223,10 @@ Clear documentation of test architecture
 
 ### For Project Continuity:
 
-1. **Always read SESSION-CONTEXT.md first** when starting a new session
-2. **Understand there are TWO test suites** - not duplicates
+1. **Always read tasks.md first** for current project status
+2. **Read test-suite-reconciliation.md** to understand TWO test suites (not duplicates)
 3. **Both test suites are valuable** and should be maintained
-4. **Focus on unit tests** for iteration 3 work
+4. **Read README.md** for documentation overview and useful patterns
 
 ### For vLLM Maintainers:
 
@@ -270,6 +262,6 @@ Clear documentation of test architecture
 
 ---
 
-**For new Claude sessions**: Start with SESSION-CONTEXT.md, then read test-suite-reconciliation.md to understand the full picture.
+**For new work sessions**: Start with tasks.md for current status, then read README.md and test-suite-reconciliation.md to understand the full picture.
 
 **For stakeholders**: Both test suites should be maintained. They serve different but equally important purposes in ensuring vLLM tool parser quality.

@@ -409,7 +409,7 @@ pytest tests/tool_use/test_*_tool_parser.py -v
 - Remove references to migration plans
 - Set expectations correctly for future developers
 
-**Action**: Update CLAUDE.md, SESSION-CONTEXT.md, spec.md, and this file
+**Action**: Update CLAUDE.md, spec.md, and this file
 
 ---
 
